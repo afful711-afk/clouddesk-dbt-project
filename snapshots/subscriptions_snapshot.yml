@@ -1,0 +1,9 @@
+
+snapshots:
+  - name: subscriptions_snapshot
+    relation: ref('stg_subscriptions')
+    config:
+      schema: snapshots
+      unique_key: subscription_id
+      strategy: timestamp
+      updated_at: updated_at

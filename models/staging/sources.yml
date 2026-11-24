@@ -1,0 +1,11 @@
+version: 2
+
+sources:
+  - name: clouddesk
+    database: gifty-module-8
+    schema: clouddesk_raw
+    tables:
+      - name: accounts
+      - name: subscriptions
+      - name: tickets
+      - name: users

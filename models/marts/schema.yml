@@ -1,0 +1,58 @@
+
+version: 2
+
+models:
+  - name: fct_tickets
+    description: "Fact table containing CloudDesk support tickets."
+    columns:
+      - name: ticket_id
+        description: "Unique identifier for each support ticket."
+        data_tests:
+          - unique:
+              config:
+                meta:
+                  failure_consequence: "Duplicate tickets would inflate support ticket counts and distort workload reporting."
+          - not_null:
+              config:
+                meta:
+                  failure_consequence: "Missing ticket IDs would prevent reliable identification and tracking of support requests."
+
+      - name: account_id
+        description: "Identifies the customer account associated with each ticket."
+        data_tests:
+          - not_null:
+              config:
+                meta:
+                  failure_consequence: "Tickets without account IDs could not be accurately attributed to customers."
+          - relationships:
+              arguments:
+                to: ref('dim_account')
+                field: account_id
+              config:
+                meta:
+                  failure_consequence: "Unmatched accounts would cause missing or incorrect customer-level ticket reporting."
+
+      - name: ticket_status
+        description: "Current status of a support ticket."
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ['closed', 'open', 'resolved']
+              config:
+                meta:
+                  failure_consequence: "Unexpected ticket statuses would make open and resolved ticket counts unreliable."
+
+  - name: dim_account
+    description: "Account dimension table containing customer information."
+    columns:
+      - name: account_id
+        description: "Unique identifier for each customer account."
+        data_tests:
+          - unique:
+              config:
+                meta:
+                  failure_consequence: "Duplicate account IDs could multiply ticket records during joins and inflate customer activity metrics."
+          - not_null:
+              config:
+                meta:
+                  failure_consequence: "Missing account IDs would prevent reliable matching between customers and their support tickets."
